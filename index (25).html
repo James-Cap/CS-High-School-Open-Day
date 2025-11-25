@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #006400 0%, #228B22 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 50px;
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            border: 3px solid #006400;
+        }
+
+        h1 {
+            color: #006400;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #228B22;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        input[type="password"], input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #228B22;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        button {
+            background: #006400;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            margin: 10px;
+        }
+
+        button:hover {
+            background: #228B22;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 100, 0, 0.3);
+        }
+
+        .error {
+            color: #dc3545;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #228B22;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .game-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .encrypted-message {
+            background: #f8f8f8;
+            border: 3px dashed #006400;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.3em;
+            color: #006400;
+            font-weight: bold;
+            margin: 20px 0;
+            letter-spacing: 2px;
+        }
+
+        .hint-box {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            color: #1b5e20;
+        }
+
+        .explanation {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            color: #1b5e20;
+            text-align: left;
+            line-height: 1.8;
+        }
+
+        .explanation h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .cipher-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+            gap: 5px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .cipher-cell {
+            padding: 8px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .cipher-cell strong {
+            color: #006400;
+        }
+
+        .checkmark {
+            font-size: 4em;
+            color: #228B22;
+            margin-bottom: 20px;
+        }
+
+        .expressions-box {
+            background: #f8f8f8;
+            border: 3px solid #006400;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .expressions-box strong {
+            color: #006400;
+        }
+
+        .final-password {
+            background: #228B22;
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Pagina 1: Richiesta Password -->
+        <div id="page1" class="page active">
+            <h1>Step 2</h1>
+            <p class="subtitle">Inserisci la password per iniziare</p>
+            
+            <input type="password" id="passwordInput" placeholder="Inserisci la password" />
+            <button onclick="checkInitialPassword()">Conferma</button>
+            <p id="errorMsg1" class="error"></p>
+        </div>
+
+        <!-- Pagina 2: Gioco di Equazioni -->
+        <div id="page2" class="page">
+            <h1>Gioco sulla Crittografia</h1>
+            <p class="subtitle">Risolvi le espressioni e decifra la parola!</p>
+            
+            <div class="game-section">
+                <p style="color: #333; font-size: 1.1em; margin-bottom: 20px;">
+                    Risolvi queste <strong>espressioni</strong> per trovare i numeri segreti!<br>
+                    Poi usa la <strong style="color: #006400;">tabella di conversione</strong> per scoprire la parola nascosta.
+                </p>
+                
+                <div class="expressions-box">
+                    <div style="font-size: 1.3em; color: #333; text-align: left; margin-bottom: 15px;">
+                        <strong>Espressione 1:</strong> 2 [4 + (7 - 5)] =<br>
+                        <strong>Espressione 2:</strong> 6 + (3 + 2)(9 - 6) =<br>
+                        <strong>Espressione 3:</strong> 13 - [(5 + 7 - 2) - 10)] =<br>
+                        <strong>Espressione 4:</strong> (2 + 3)(3 + 2) - 20 =<br>
+                        <strong>Espressione 5:</strong> {3 [(7 - 2) (-4 + 5)]} - 1 =
+                    </div>
+                </div>
+                
+                <div class="hint-box">
+                    <strong>Tabella di Conversione Numeri → Lettere:</strong>
+                    <div class="cipher-grid" style="margin-top: 15px;">
+                        <div class="cipher-cell">1=<strong>A</strong></div>
+                        <div class="cipher-cell">2=<strong>B</strong></div>
+                        <div class="cipher-cell">3=<strong>C</strong></div>
+                        <div class="cipher-cell">4=<strong>D</strong></div>
+                        <div class="cipher-cell">5=<strong>E</strong></div>
+                        <div class="cipher-cell">6=<strong>F</strong></div>
+                        <div class="cipher-cell">7=<strong>G</strong></div>
+                        <div class="cipher-cell">8=<strong>H</strong></div>
+                        <div class="cipher-cell">9=<strong>I</strong></div>
+                        <div class="cipher-cell">10=<strong>J</strong></div>
+                        <div class="cipher-cell">11=<strong>K</strong></div>
+                        <div class="cipher-cell">12=<strong>L</strong></div>
+                        <div class="cipher-cell">13=<strong>M</strong></div>
+                        <div class="cipher-cell">14=<strong>N</strong></div>
+                        <div class="cipher-cell">15=<strong>O</strong></div>
+                        <div class="cipher-cell">16=<strong>P</strong></div>
+                        <div class="cipher-cell">17=<strong>Q</strong></div>
+                        <div class="cipher-cell">18=<strong>R</strong></div>
+                        <div class="cipher-cell">19=<strong>S</strong></div>
+                        <div class="cipher-cell">20=<strong>T</strong></div>
+                        <div class="cipher-cell">21=<strong>U</strong></div>
+                        <div class="cipher-cell">22=<strong>V</strong></div>
+                        <div class="cipher-cell">23=<strong>W</strong></div>
+                        <div class="cipher-cell">24=<strong>X</strong></div>
+                        <div class="cipher-cell">25=<strong>Y</strong></div>
+                        <div class="cipher-cell">26=<strong>Z</strong></div>
+                    </div>
+                </div>
+
+                <input type="text" id="decryptInput" placeholder="Inserisci la parola decifrata" />
+                <button onclick="checkDecryption()">Verifica</button>
+                <p id="errorMsg2" class="error"></p>
+                <p id="successMsg" class="success"></p>
+            </div>
+
+            <div class="explanation">
+                <h3>Cos'è la Crittografia?</h3>
+                <p>
+                    <strong>La crittografia</strong> è l'arte di nascondere messaggi segreti! 
+                    In questo gioco hai usato le equazioni matematiche come chiave per decifrare un messaggio.
+                </p>
+                <br>
+                <p>
+                    Risolvendo le espressioni hai trovato dei numeri che corrispondono 
+                    a delle lettere secondo la tabella di conversione.
+                </p>
+                <br>
+                <p>
+                    Oggi, la crittografia è ovunque: quando mandi un messaggio su WhatsApp, quando fai acquisti online, 
+                    o quando usi il bancomat. I computer usano metodi matematici molto complessi 
+                    per proteggere le tue informazioni personali!
+                </p>
+            </div>
+        </div>
+
+        <!-- Pagina 3: Successo -->
+        <div id="page3" class="page">
+            <div class="checkmark">✓</div>
+            <h1>Complimenti!</h1>
+            <p class="subtitle">Hai decifrato il messaggio!</p>
+            
+            <div class="game-section">
+                <p style="color: #333; font-size: 1.2em; margin-bottom: 20px;">
+                    La password decifrata era:
+                </p>
+                <div class="final-password">
+                    LUMEN
+                </div>
+                <p style="color: #333; font-size: 1.1em; margin-top: 20px;">
+                    Usa questa password per proseguire alla prossima postazione!
+                </p>
+                <br>
+                <p style="color: #666; font-size: 0.9em;">
+                    Questi siti sono stati creati dagli studenti di questa scuola.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pagina 1: Controllo password iniziale
+        function checkInitialPassword() {
+            const password = document.getElementById('passwordInput').value.toUpperCase();
+            const correctPassword = 'PROGRESSUS';
+            
+            if (password === correctPassword) {
+                document.getElementById('page1').classList.remove('active');
+                document.getElementById('page2').classList.add('active');
+                document.getElementById('errorMsg1').textContent = '';
+            } else {
+                document.getElementById('errorMsg1').textContent = '❌ Password errata. Riprova!';
+            }
+        }
+
+        // Pagina 2: Controllo decifrazione
+        function checkDecryption() {
+            const answer = document.getElementById('decryptInput').value.toUpperCase();
+            const correctAnswer = 'LUMEN';
+            
+            if (answer === correctAnswer) {
+                document.getElementById('page2').classList.remove('active');
+                document.getElementById('page3').classList.add('active');
+                document.getElementById('errorMsg2').textContent = '';
+            } else {
+                document.getElementById('errorMsg2').textContent = '❌ Sbagliato. Riprova!';
+                document.getElementById('successMsg').textContent = '';
+            }
+        }
+
+        // Permetti invio con tasto Enter
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkInitialPassword();
+        });
+
+        document.getElementById('decryptInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkDecryption();
+        });
+    </script>
+</body>
+</html>

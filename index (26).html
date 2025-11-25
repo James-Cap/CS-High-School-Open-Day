@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gioco Rebus</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #006400 0%, #228B22 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 50px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            border: 3px solid #006400;
+        }
+
+        h1 {
+            color: #006400;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #228B22;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        input[type="password"], input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #228B22;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        input[type="text"]::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        button {
+            background: #006400;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            margin: 10px;
+        }
+
+        button:hover {
+            background: #228B22;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 100, 0, 0.3);
+        }
+
+        .error {
+            color: #dc3545;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: #228B22;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .game-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .rebus-container {
+            background: #f8f8f8;
+            border: 3px solid #006400;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .rebus-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .rebus-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .rebus-icon {
+            font-size: 4em;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 3px solid #228B22;
+        }
+
+        .rebus-text {
+            font-size: 2em;
+            font-weight: bold;
+            color: #006400;
+            font-family: 'Courier New', monospace;
+        }
+
+        .operator {
+            font-size: 3em;
+            color: #006400;
+            font-weight: bold;
+        }
+
+        .hint-box {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            color: #1b5e20;
+        }
+
+        .explanation {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+            color: #1b5e20;
+            text-align: left;
+            line-height: 1.8;
+        }
+
+        .explanation h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .checkmark {
+            font-size: 4em;
+            color: #228B22;
+            margin-bottom: 20px;
+        }
+
+        .rebus-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .solution-box {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .solution-box p {
+            color: #666;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .arrow {
+            font-size: 2em;
+            color: #006400;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Pagina 1: Richiesta Password -->
+        <div id="page1" class="page active">
+            <h1>Step 3</h1>
+            <p class="subtitle">Inserisci la password per continuare</p>
+            
+            <input type="password" id="passwordInput" placeholder="Inserisci la password dal gioco precedente" />
+            <button onclick="checkInitialPassword()">Conferma</button>
+            <p id="errorMsg1" class="error"></p>
+        </div>
+
+        <!-- Pagina 2: Gioco Rebus -->
+        <div id="page2" class="page">
+            <h1>Risolvi il Rebus!</h1>
+            <p class="subtitle">Combina gli elementi per trovare la parola nascosta</p>
+            
+            <div class="game-section">
+                <p style="color: #333; font-size: 1.1em; margin-bottom: 20px;">
+                    Osserva attentamente gli elementi e le operazioni.<br>
+                    Combina tutto per scoprire la parola finale!
+                </p>
+                
+                <div class="rebus-container">
+                    <div class="rebus-row">
+                        <div class="rebus-item">
+                            <div class="rebus-icon"></div>
+                            <div class="rebus-label">HUMAN</div>
+                        </div>
+
+                        <div class="operator">-</div>
+
+                        <div class="rebus-item">
+                            <div class="rebus-icon"></div>
+                            <div class="rebus-label">AN</div>
+                        </div>
+
+                        
+                        <div class="operator">+</div>
+                        
+                        <div class="rebus-item">
+                            <div class="rebus-text">ANIT</div>
+                            <div class="rebus-label">(aggiungi ANIT)</div>
+                        </div>
+                        
+                        <div class="operator">+</div>
+                        
+                        <div class="rebus-item">
+                            <div class="rebus-icon"></div>
+                            <div class="rebus-label">ATIS</div>
+                        </div>
+                    </div>
+
+                    <div class="arrow">⬇️</div>
+
+                    <div class="rebus-row">
+                        <div class="rebus-item">
+                            <div class="rebus-text">?</div>
+                            <div class="rebus-label">Quale parola si forma?</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hint-box">
+                    <strong>Come risolvere:</strong><br>
+                    1. Prendi la parola HUMAN<br>
+                    2. Togli -AN<br>
+                    3. Aggiungi ANIT<br>
+                    4. Aggiungi ATIS<br>
+                    5. Unisci tutto insieme!<br>
+                    <br>
+                    <em>Suggerimento: La parola finale è in latino e significa "delle cose umane"</em>
+                </div>
+                
+                <input type="text" id="rebusInput" placeholder="Scrivi qui la parola che hai trovato..." style="text-transform: uppercase;" />
+                <button onclick="checkRebus()">Verifica Soluzione</button>
+                <p id="errorMsg2" class="error"></p>
+            </div>
+
+            <div class="explanation">
+                <h3>Cos'è un Rebus?</h3>
+                <p>
+                    Un <strong>rebus</strong> è un gioco di enigmistica dove devi indovinare una parola o una frase 
+                    combinando immagini, lettere e operazioni! È come un puzzle linguistico.
+                </p>
+                <br>
+                <p>
+                    Nel nostro rebus hai visto che bisogna fare addizioni (+) con le parole, 
+                    proprio come si fa con i numeri in matematica! La differenza è che invece di numeri, 
+                    lavoriamo con lettere e sillabe.
+                </p>
+                <br>
+                <p>
+                    I rebus sono ottimi per allenare il cervello: ti aiutano a pensare in modo creativo, 
+                    migliorano la tua capacità di problem solving e ti fanno vedere le parole da una prospettiva diversa. 
+                    Inoltre, sono molto divertenti!
+                </p>
+            </div>
+        </div>
+
+        <!-- Pagina 3: Successo -->
+        <div id="page3" class="page">
+            <div class="checkmark">✓</div>
+            <h1>Fantastico!</h1>
+            <p class="subtitle">Hai risolto il rebus!</p>
+            
+            <div class="game-section">
+                <p style="color: #333; font-size: 1.2em; margin-bottom: 20px;">
+                    La soluzione del rebus era:
+                </p>
+                
+                <div class="solution-box">
+                    <p>
+                        HUMAN - AN + ANIT + ATIS = HUMANITATIS
+                    </p>
+                </div>
+                
+                <p style="color: #333; font-size: 1.1em; margin-top: 20px;">
+                    Questa è la tua nuova password per la prossima postazione!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pagina 1: Controllo password iniziale
+        function checkInitialPassword() {
+            const password = document.getElementById('passwordInput').value.toUpperCase();
+            const correctPassword = 'LUMEN';
+            
+            if (password === correctPassword) {
+                document.getElementById('page1').classList.remove('active');
+                document.getElementById('page2').classList.add('active');
+                document.getElementById('errorMsg1').textContent = '';
+            } else {
+                document.getElementById('errorMsg1').textContent = '❌ Password errata. Riprova!';
+            }
+        }
+
+        // Pagina 2: Controllo rebus
+        function checkRebus() {
+            const answer = document.getElementById('rebusInput').value.toUpperCase();
+            const correctAnswer = 'HUMANITATIS';
+            
+            if (answer === correctAnswer) {
+                document.getElementById('page2').classList.remove('active');
+                document.getElementById('page3').classList.add('active');
+                document.getElementById('errorMsg2').textContent = '';
+            } else {
+                document.getElementById('errorMsg2').textContent = '❌ Sbagliato. Rileggi il rebus attentamente!';
+            }
+        }
+
+        // Permetti invio con tasto Enter
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkInitialPassword();
+        });
+
+        document.getElementById('rebusInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkRebus();
+        });
+
+        // Auto-uppercase per l'input del rebus
+        document.getElementById('rebusInput').addEventListener('input', function(e) {
+            this.value = this.value.toUpperCase();
+        });
+    </script>
+</body>
+</html>

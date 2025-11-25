@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Day - Benvenuti</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #006400 0%, #228B22 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 50px;
+            max-width: 600px;
+            text-align: center;
+            border: 3px solid #006400;
+        }
+
+        h1 {
+            color: #006400;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            color: #228B22;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .qr-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #qrcode {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .instruction {
+            color: #333;
+            font-size: 1.1em;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        .footer {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #228B22;
+        }
+
+        /* Password Page Styles */
+        .password-page {
+            display: none;
+        }
+
+        .password-page.active {
+            display: block;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #228B22;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        button {
+            background: #006400;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #228B22;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 100, 0, 0.3);
+        }
+
+        .error {
+            color: #228B22;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .success-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .success-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .checkmark {
+            font-size: 4em;
+            color: #006400;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #006400;
+        }
+
+        .password-box {
+            background: #006400;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 2em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .station-box {
+            background: #228B22;
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .station-title {
+            color: #228B22;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Landing Page -->
+        <div id="landingPage">
+            <h1>Benvenuti al laboratorio di informatica</h1>
+            <p class="subtitle">Questo è il primo step del vostro viaggio!</p>
+            
+            <div class="qr-section">
+                <div id="qrcode"></div>
+                <p class="instruction">
+                    Scannerizza il QR Code per accedere alla password
+                </p>
+            </div>
+            
+            <div class="footer">
+                <p>Buona fortuna!</p>
+            </div>
+        </div>
+
+        <!-- Password Page -->
+        <div id="passwordPage" class="password-page">
+            <div class="checkmark">✓</div>
+            <h1>Primo Step Completato!</h1>
+            <p class="subtitle"></p>
+            
+            <div class="qr-section">
+                <h2>La tua password è:</h2>
+                <div class="password-box">
+                    PROGRESSUS
+                </div>
+                
+                <h2 class="station-title">Vai alla postazione:</h2>
+                <div class="station-box">
+                    2
+                </div>
+            </div>
+            
+            <p class="instruction">
+                Inserisci la password nella postazione indicata<br>
+                per continuare il tuo percorso!
+            </p>
+        </div>
+    </div>        
+        
+    <!-- QR Code Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <script>
+        // Get current URL and create QR code
+        const currentUrl = window.location.href;
+        const passwordUrl = currentUrl + (currentUrl.includes('?') ? '&' : '?') + 'page=secure';
+        
+        new QRCode(document.getElementById("qrcode"), {
+            text: passwordUrl,
+            width: 200,
+            height: 200,
+            colorDark: "#006400",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // Check URL parameters on load
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('page') === 'secure') {
+                document.getElementById('landingPage').style.display = 'none';
+                document.getElementById('passwordPage').classList.add('active');
+            }
+        });
+
+        // Password checking
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const correctPassword = 'PROGRESSUS'; 
+            
+            if (password === correctPassword) {
+                document.getElementById('passwordPage').classList.remove('active');
+                document.getElementById('successPage').classList.add('active');
+                document.getElementById('errorMsg').textContent = '';
+            } else {
+                document.getElementById('errorMsg').textContent = 'Incorrect password. Please try again.';
+            }
+        }
+
+        // Allow Enter key to submit
+        if (document.getElementById('passwordInput')) {
+            document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
